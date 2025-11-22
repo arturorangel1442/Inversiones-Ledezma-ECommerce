@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, session
-from flask_cors import cross_origin
+from flask_cors import CORS, cross_origin
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from functools import wraps
 from models import db, Producto, Pedido, Usuario, Configuracion, Categoria, init_db
@@ -637,34 +637,7 @@ def actualizar_producto(producto_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/productos', methods=['GET'])
-@cross_origin()
-def obtener_productos():
-    """Endpoint para obtener todos los productos"""
-    try:
-        # Obtener todos los productos
-        productos = Producto.select()
-        
-        # Convertir a lista de diccionarios
-        productos_list = []
-        for p in productos:
-            producto_dict = {
-                'id': p.id,
-                'nombre': p.nombre,
-                'precio': float(p.precio),
-                'stock': p.stock,
-                'imagen_url': p.imagen_url,
-                'categoria_id': p.categoria_id.id if p.categoria_id else None,
-                'categoria_nombre': p.categoria_id.nombre if p.categoria_id else None
-            }
-            productos_list.append(producto_dict)
-            
-        return jsonify(productos_list)
 
-    except Exception as e:
-        # Esto nos ayuda a debuggear en Render
-        print(f"ERROR AL OBTENER PRODUCTOS: {e}")
-        return jsonify({"mensaje": "Error interno del servidor al obtener productos"}), 500
 @app.route('/api/productos/<int:producto_id>', methods=['DELETE'])
 @admin_required
 def eliminar_producto(producto_id):
