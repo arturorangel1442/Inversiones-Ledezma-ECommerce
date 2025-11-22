@@ -828,43 +828,6 @@ def eliminar_categoria(categoria_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# RUTA TEMPORAL PARA INICIALIZAR BASE DE DATOS
-# ATENCIÓN: Esta ruta debe ser eliminada después de su uso
-@app.route('/api/temp/init-db', methods=['GET'])
-def temp_init_db():
-    """Ruta temporal para inicializar la base de datos y crear usuario administrador"""
-    try:
-        # Ejecutar init_db() para crear tablas, categorías y productos
-        init_db()
-        
-        # Crear usuario administrador si no existe
-        admin_email = 'admin@inversionesledezma.com'
-        admin_password = 'admin123'  # Contraseña por defecto
-        
-        try:
-            admin_user = Usuario.get(Usuario.correo == admin_email)
-            return jsonify({
-                'mensaje': 'Base de datos inicializada. Usuario administrador ya existe.',
-                'correo': admin_email,
-                'usuario_id': admin_user.id
-            }), 200
-        except Usuario.DoesNotExist:
-            # Crear usuario administrador
-            contraseña_hash = bcrypt.hashpw(admin_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            admin_user = Usuario.create(
-                correo=admin_email,
-                contraseña_hash=contraseña_hash,
-                is_admin=True
-            )
-            return jsonify({
-                'mensaje': 'Base de datos inicializada correctamente. Usuario administrador creado.',
-                'correo': admin_email,
-                'contraseña': admin_password,
-                'usuario_id': admin_user.id
-            }), 201
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 # Manejar errores de autenticación
 @login_manager.unauthorized_handler
 def unauthorized():
