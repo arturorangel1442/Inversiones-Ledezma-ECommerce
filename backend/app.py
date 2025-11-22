@@ -876,3 +876,12 @@ if __name__ == '__main__':
     
     # Ejecutar servidor
     app.run(debug=True, port=5000)
+# RUTA TEMPORAL PARA INICIALIZAR LA BASE DE DATOS EN PRODUCCIÓN
+@app.route('/inicializar-db-temporal', methods=['GET'])
+def temp_init_db():
+    try:
+        init_db()
+        return jsonify({"message": "Base de datos inicializada con éxito (Admin y Productos creados)."}), 200
+    except Exception as e:
+        # Esto ayudará a diagnosticar si falla la conexión a PostgreSQL
+        return jsonify({"error": str(e)}), 500
