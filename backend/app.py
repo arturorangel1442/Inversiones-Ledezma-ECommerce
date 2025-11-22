@@ -18,31 +18,49 @@ login_manager.session_protection = "strong"
 
 # Configurar CORS para desarrollo y producción
 # Obtener orígenes permitidos desde variables de entorno o usar valores por defecto
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://127.0.0.1:3000')
-ALLOWED_ORIGINS = os.environ.get('ALLOWED_ORIGINS', '').split(',') if os.environ.get('ALLOWED_ORIGINS') else []
+def get_allowed_origins():
+    """Obtener lista de orígenes permitidos desde variables de entorno"""
+    # Orígenes por defecto para desarrollo
+    default_origins = [
+        'http://127.0.0.1:3000',
+        'http://localhost:3000',
+    ]
+    
+    # Orígenes de producción (pueden ser sobrescritos por variable de entorno)
+    production_origins = [
+        'https://inversionesledezma.vercel.app',
+        'https://www.inversionesledezma.vercel.app',
+    ]
+    
+    # Obtener orígenes desde variable de entorno (separados por comas)
+    env_origins = os.environ.get('ALLOWED_ORIGINS', '')
+    if env_origins:
+        # Si se proporciona variable de entorno, usar solo esos orígenes
+        custom_origins = [origin.strip() for origin in env_origins.split(',') if origin.strip()]
+        # Combinar con orígenes por defecto de desarrollo
+        all_origins = default_origins + custom_origins
+    else:
+        # Si no hay variable de entorno, usar orígenes por defecto + producción
+        all_origins = default_origins + production_origins
+    
+    # Eliminar duplicados manteniendo el orden
+    unique_origins = list(dict.fromkeys(all_origins))
+    
+    return unique_origins
 
-# Lista de orígenes permitidos
-origins = [
-    'http://127.0.0.1:3000',
-    'http://localhost:3000',
-    'https://inversionesledezma.vercel.app',
-    'https://www.inversionesledezma.vercel.app',
-]
-
-# Añadir orígenes adicionales desde variable de entorno si existen
-if ALLOWED_ORIGINS:
-    origins.extend([origin.strip() for origin in ALLOWED_ORIGINS if origin.strip()])
-
-# Eliminar duplicados manteniendo el orden
-origins = list(dict.fromkeys(origins))
+# Obtener orígenes permitidos
+allowed_origins = get_allowed_origins()
 
 # Habilitar CORS con orígenes específicos para seguridad
+# Esta configuración es compatible con Gunicorn ya que Flask-CORS maneja CORS a nivel de aplicación
 CORS(
     app,
-    origins=origins,
+    origins=allowed_origins,
     supports_credentials=True,
-    allow_headers=['Content-Type', 'Authorization'],
-    methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    allow_headers=['Content-Type', 'Authorization', 'X-Requested-With'],
+    methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    expose_headers=['Content-Type', 'Authorization'],
+    max_age=3600  # Cache preflight requests por 1 hora
 )
 
 @login_manager.user_loader
@@ -808,6 +826,43 @@ def eliminar_categoria(categoria_id):
             'id': categoria_id
         }), 200
         
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# RUTA TEMPORAL PARA INICIALIZAR BASE DE DATOS
+# ATENCIÓN: Esta ruta debe ser eliminada después de su uso
+@app.route('/api/temp/init-db', methods=['GET'])
+def temp_init_db():
+    """Ruta temporal para inicializar la base de datos y crear usuario administrador"""
+    try:
+        # Ejecutar init_db() para crear tablas, categorías y productos
+        init_db()
+        
+        # Crear usuario administrador si no existe
+        admin_email = 'admin@inversionesledezma.com'
+        admin_password = 'admin123'  # Contraseña por defecto
+        
+        try:
+            admin_user = Usuario.get(Usuario.correo == admin_email)
+            return jsonify({
+                'mensaje': 'Base de datos inicializada. Usuario administrador ya existe.',
+                'correo': admin_email,
+                'usuario_id': admin_user.id
+            }), 200
+        except Usuario.DoesNotExist:
+            # Crear usuario administrador
+            contraseña_hash = bcrypt.hashpw(admin_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            admin_user = Usuario.create(
+                correo=admin_email,
+                contraseña_hash=contraseña_hash,
+                is_admin=True
+            )
+            return jsonify({
+                'mensaje': 'Base de datos inicializada correctamente. Usuario administrador creado.',
+                'correo': admin_email,
+                'contraseña': admin_password,
+                'usuario_id': admin_user.id
+            }), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
