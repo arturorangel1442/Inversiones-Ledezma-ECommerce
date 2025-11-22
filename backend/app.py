@@ -93,8 +93,7 @@ def after_request(response):
     if not db.is_closed():
         db.close()
     return response
-
-@app.route('/api/productos', methods=['GET'])
+@app.route('/productos', methods=['GET'])
 def obtener_productos():
     """Endpoint para obtener todos los productos"""
     try:
