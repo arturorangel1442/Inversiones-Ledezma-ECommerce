@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, session
-from flask_cors import CORS, cross_origin
+from flask_cors import cross_origin
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from functools import wraps
 from models import db, Producto, Pedido, Usuario, Configuracion, Categoria, init_db

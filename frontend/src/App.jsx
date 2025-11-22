@@ -6,7 +6,8 @@ import AdminPanel from './components/AdminPanel'
 import HistorialPedidos from './components/HistorialPedidos'
 import Login from './components/Login'
 import Registro from './components/Registro'
-import { API_BASE_URL } from './config'
+
+const API_BASE_URL = 'https://inversiones-ledezma-ecommerce.onrender.com'
 
 function App() {
   const [productos, setProductos] = useState([])
@@ -44,7 +45,7 @@ function App() {
 
   // Cargar productos desde la API
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/productos`)
+    fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/productos')
       .then(res => res.json())
       .then(data => {
         setProductos(data)

@@ -19,7 +19,7 @@ function HistorialPedidos() {
   // Cargar tasa BCV
   const cargarTasaBcv = async () => {
     try {
-      const response = await fetch('/api/configuracion/tasa')
+      const response = await fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/configuracion/tasa')
       if (response.ok) {
         const data = await response.json()
         setTasaBcv(data.tasa_bcv)

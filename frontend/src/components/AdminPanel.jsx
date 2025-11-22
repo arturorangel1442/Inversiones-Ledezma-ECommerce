@@ -181,7 +181,7 @@ function AdminPanel() {
     try {
       setLoadingProductos(true)
       setErrorProductos('')
-      const response = await fetch('/api/productos')
+      const response = await fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/productos')
       
       if (!response.ok) {
         throw new Error('Error al cargar los productos')
@@ -260,8 +260,8 @@ function AdminPanel() {
 
     try {
       const url = productoEditando 
-        ? `/api/productos/${productoEditando.id}` 
-        : '/api/productos'
+        ? `https://inversiones-ledezma-ecommerce.onrender.com/api/productos/${productoEditando.id}` 
+        : 'https://inversiones-ledezma-ecommerce.onrender.com/api/productos'
       const method = productoEditando ? 'PUT' : 'POST'
 
       const body = {
@@ -302,7 +302,7 @@ function AdminPanel() {
     }
 
     try {
-      const response = await fetch(`/api/productos/${productoId}`, {
+      const response = await fetch(`https://inversiones-ledezma-ecommerce.onrender.com/api/productos/${productoId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -325,7 +325,7 @@ function AdminPanel() {
   // Funciones para gestión de tasa BCV
   const cargarTasaBcv = async () => {
     try {
-      const response = await fetch('/api/configuracion/tasa')
+      const response = await fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/configuracion/tasa')
       
       if (!response.ok) {
         throw new Error('Error al cargar la tasa BCV')
@@ -354,7 +354,7 @@ function AdminPanel() {
 
     try {
       setActualizandoTasa(true)
-      const response = await fetch('/api/configuracion/tasa', {
+      const response = await fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/configuracion/tasa', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -385,7 +385,7 @@ function AdminPanel() {
     try {
       setLoadingCategorias(true)
       setErrorCategorias('')
-      const response = await fetch('/api/categorias')
+      const response = await fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/categorias')
       
       if (!response.ok) {
         throw new Error('Error al cargar las categorías')
@@ -431,8 +431,8 @@ function AdminPanel() {
 
     try {
       const url = categoriaEditando 
-        ? `/api/categorias/${categoriaEditando.id}` 
-        : '/api/categorias'
+        ? `https://inversiones-ledezma-ecommerce.onrender.com/api/categorias/${categoriaEditando.id}` 
+        : 'https://inversiones-ledezma-ecommerce.onrender.com/api/categorias'
       const method = categoriaEditando ? 'PUT' : 'POST'
 
       const body = {
@@ -470,7 +470,7 @@ function AdminPanel() {
     }
 
     try {
-      const response = await fetch(`/api/categorias/${categoriaId}`, {
+      const response = await fetch(`https://inversiones-ledezma-ecommerce.onrender.com/api/categorias/${categoriaId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

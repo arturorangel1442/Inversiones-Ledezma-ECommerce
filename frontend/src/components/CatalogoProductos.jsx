@@ -10,7 +10,7 @@ function CatalogoProductos({ productos, onAgregarAlCarrito }) {
   useEffect(() => {
     const cargarTasaBcv = async () => {
       try {
-        const response = await fetch('/api/configuracion/tasa')
+        const response = await fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/configuracion/tasa')
         if (response.ok) {
           const data = await response.json()
           setTasaBcv(data.tasa_bcv)
@@ -22,7 +22,7 @@ function CatalogoProductos({ productos, onAgregarAlCarrito }) {
     
     const cargarCategorias = async () => {
       try {
-        const response = await fetch('/api/categorias')
+        const response = await fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/categorias')
         if (response.ok) {
           const data = await response.json()
           setCategorias(data)
