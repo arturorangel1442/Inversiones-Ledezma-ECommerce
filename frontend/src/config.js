@@ -2,6 +2,7 @@
 // En desarrollo, usa el proxy de Vite (ruta relativa)
 // En producción, usa la variable de entorno VITE_API_URL
 export const API_URL = import.meta.env.VITE_API_URL || ''
+export const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 // Función helper para construir URLs de API
 export const getApiUrl = (endpoint) => {

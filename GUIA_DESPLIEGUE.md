@@ -99,13 +99,39 @@ Si te pide autenticación, usa un **Personal Access Token** en lugar de tu contr
 5. En **Environment Variables**, añade:
    - `SECRET_KEY`: Genera una clave secreta segura (puedes usar: `python -c "import secrets; print(secrets.token_hex(32))"`)
    - `ALLOWED_ORIGINS`: `https://inversionesledezma.vercel.app,https://www.inversionesledezma.vercel.app` (ajusta con tu dominio real)
+   - `DATABASE_URL`: **IMPORTANTE** - Necesitas crear una base de datos PostgreSQL primero (ver sección 3.3)
 6. Haz clic en **"Create Web Service"**
 
-### 3.3 Obtener la URL del Backend
+### 3.3 Crear Base de Datos PostgreSQL en Render
+
+**IMPORTANTE**: El backend requiere PostgreSQL en producción. Sigue estos pasos:
+
+1. En el Dashboard de Render, haz clic en **"New +"** → **"PostgreSQL"**
+2. Configura:
+   - **Name**: `supermercado-db` (o el nombre que prefieras)
+   - **Database**: `supermercado` (o el nombre que prefieras)
+   - **User**: Se generará automáticamente
+   - **Region**: Elige la misma región que tu Web Service
+   - **PostgreSQL Version**: Usa la versión más reciente disponible
+   - **Plan**: Elige el plan gratuito o el que prefieras
+3. Haz clic en **"Create Database"**
+4. Una vez creada, ve a la pestaña **"Connections"** de tu base de datos
+5. Copia la **"Internal Database URL"** (formato: `postgresql://user:password@host:port/dbname`)
+6. Ve a tu Web Service → **Environment** → **Environment Variables**
+7. Añade o actualiza:
+   - **Key**: `DATABASE_URL`
+   - **Value**: Pega la URL que copiaste
+8. Guarda los cambios
+
+**Nota**: El backend detectará automáticamente `DATABASE_URL` y usará PostgreSQL. Si no está configurada, usará SQLite (solo para desarrollo local).
+
+### 3.4 Obtener la URL del Backend
 
 Una vez desplegado, Render te dará una URL como: `https://supermercado-backend.onrender.com`
 
 **⚠️ IMPORTANTE**: Copia esta URL, la necesitarás para configurar el Frontend.
+
+**Nota sobre la Base de Datos**: La primera vez que se ejecute el backend, las tablas se crearán automáticamente gracias a la función `init_db()`. Si necesitas migrar datos desde SQLite local a PostgreSQL, deberás hacerlo manualmente o usar herramientas de migración.
 
 ---
 

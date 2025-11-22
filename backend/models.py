@@ -1,9 +1,47 @@
 from peewee import *
 import json
+import os
+from urllib.parse import urlparse
 from flask_login import UserMixin
 
-# Base de datos SQLite
-db = SqliteDatabase('supermercado.db')
+# Configurar base de datos según el entorno
+# Si hay DATABASE_URL (producción), usar PostgreSQL
+# Si no, usar SQLite para desarrollo local
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    # Producción: usar PostgreSQL
+    # Parsear la URL de la base de datos (formato: postgresql://user:password@host:port/dbname)
+    # También soporta postgres:// (formato alternativo)
+    try:
+        # Normalizar el esquema de la URL (algunos servicios usan postgres:// en lugar de postgresql://)
+        db_url = DATABASE_URL
+        if db_url.startswith('postgres://'):
+            db_url = db_url.replace('postgres://', 'postgresql://', 1)
+        
+        parsed = urlparse(db_url)
+        
+        # Validar que sea una URL de PostgreSQL
+        if parsed.scheme not in ['postgresql', 'postgres']:
+            raise ValueError(f'Esquema de base de datos no soportado: {parsed.scheme}')
+        
+        # Peewee espera los parámetros por separado
+        db = PostgresqlDatabase(
+            database=parsed.path[1:] if parsed.path else 'supermercado',  # Eliminar el '/' inicial
+            user=parsed.username or 'postgres',
+            password=parsed.password or '',
+            host=parsed.hostname or 'localhost',
+            port=parsed.port or 5432,
+        )
+        print('✓ Configurado para usar PostgreSQL (producción)')
+    except Exception as e:
+        print(f'Error al configurar PostgreSQL: {e}')
+        print('Falling back to SQLite...')
+        db = SqliteDatabase('supermercado.db')
+else:
+    # Desarrollo: usar SQLite
+    db = SqliteDatabase('supermercado.db')
+    print('✓ Configurado para usar SQLite (desarrollo)')
 
 class Usuario(UserMixin, Model):
     """Modelo de Usuario para la base de datos"""

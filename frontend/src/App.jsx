@@ -6,6 +6,7 @@ import AdminPanel from './components/AdminPanel'
 import HistorialPedidos from './components/HistorialPedidos'
 import Login from './components/Login'
 import Registro from './components/Registro'
+import { API_BASE_URL } from './config'
 
 function App() {
   const [productos, setProductos] = useState([])
@@ -43,7 +44,7 @@ function App() {
 
   // Cargar productos desde la API
   useEffect(() => {
-    fetch('/api/productos')
+    fetch(`${API_BASE_URL}/api/productos`)
       .then(res => res.json())
       .then(data => {
         setProductos(data)
