@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, session
-from flask_cors import cross_origin
+from flask_cors import CORS, cross_origin
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from functools import wraps
 from models import db, Producto, Pedido, Usuario, Configuracion, Categoria, init_db
@@ -101,7 +101,7 @@ def obtener_productos():
     try:
         # Obtener todos los productos
         productos = Producto.select()
-
+        
         # Convertir a lista de diccionarios
         productos_list = []
         for p in productos:
@@ -115,7 +115,7 @@ def obtener_productos():
                 'categoria_nombre': p.categoria_id.nombre if p.categoria_id else None
             }
             productos_list.append(producto_dict)
-
+        
         return jsonify(productos_list)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
