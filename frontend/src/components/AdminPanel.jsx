@@ -188,7 +188,8 @@ function AdminPanel() {
       }
       
       const data = await response.json()
-      setProductos(data)
+      // Verificar que la respuesta sea un array válido
+      setProductos(Array.isArray(data) ? data : [])
     } catch (err) {
       console.error('Error al cargar productos:', err)
       setErrorProductos('Error al cargar los productos. Por favor, recarga la página.')

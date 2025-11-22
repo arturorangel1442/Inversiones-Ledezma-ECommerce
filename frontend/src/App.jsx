@@ -48,7 +48,8 @@ function App() {
     fetch('https://inversiones-ledezma-ecommerce.onrender.com/api/productos')
       .then(res => res.json())
       .then(data => {
-        setProductos(data)
+        // Verificar que la respuesta sea un array válido
+        setProductos(Array.isArray(data) ? data : [])
         setLoading(false)
       })
       .catch(err => {
